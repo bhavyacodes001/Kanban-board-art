@@ -4,9 +4,10 @@ import type { TaskStatus } from '../context/TasksContext'
 import { TaskCard } from './TaskCard'
 import { Modal } from './Modal'
 import { TaskForm } from './TaskForm'
-import { DndContext } from '@dnd-kit/core'
-import type { DragEndEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import type { DragEndEvent, DragStartEvent, DragOverEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import { createPortal } from 'react-dom'
 
 const statusMeta: Record<TaskStatus, { title: string; gradient: string; icon: string }> = {
   todo: { title: 'To Do', gradient: 'from-fuchsia-400 to-violet-500', icon: '📝' },
@@ -19,6 +20,12 @@ export function Board() {
   const { tasks, addTask, updateTask, deleteTask } = useTasks()
   const [modalOpen, setModalOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor)
+  )
 
   const grouped = useMemo(() => {
     const map: Record<TaskStatus, typeof tasks> = {
@@ -71,14 +78,54 @@ export function Board() {
         </button>
       </div>
       <DndContext
-        onDragEnd={({ over, active }: DragEndEvent) => {
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={({ active }: DragStartEvent) => {
+          setActiveId(active.id as string)
+        }}
+        onDragOver={({ active, over }: DragOverEvent) => {
           if (!over) return
-          const [fromStatus] = active.id.toString().split(':') as [TaskStatus]
-          const [toStatus] = over.id.toString().split(':') as [TaskStatus]
-          const taskId = active.id.toString().split(':')[1]
-          if (!taskId) return
-          if (fromStatus !== toStatus) {
-            updateTask(taskId, { status: toStatus })
+          
+          const activeId = active.id as string
+          const overId = over.id as string
+          
+          const [activeStatus] = activeId.split(':') as [TaskStatus]
+          const [overStatus] = overId.split(':') as [TaskStatus]
+          
+          if (activeStatus !== overStatus) {
+            const taskId = activeId.split(':')[1]
+            if (taskId) {
+              updateTask(taskId, { status: overStatus })
+            }
+          }
+        }}
+        onDragEnd={({ active, over }: DragEndEvent) => {
+          setActiveId(null)
+          
+          if (!over) return
+          
+          const activeId = active.id as string
+          const overId = over.id as string
+          
+          const [activeStatus] = activeId.split(':') as [TaskStatus]
+          const [overStatus] = overId.split(':') as [TaskStatus]
+          
+          if (activeStatus === overStatus) {
+            // Reorder within same column
+            const taskId = activeId.split(':')[1]
+            const overTaskId = overId.split(':')[1]
+            
+            if (taskId && overTaskId) {
+              const columnTasks = grouped[activeStatus]
+              const oldIndex = columnTasks.findIndex(t => t.id === taskId)
+              const newIndex = columnTasks.findIndex(t => t.id === overTaskId)
+              
+              if (oldIndex !== newIndex) {
+                // For now, we'll just log the reorder
+                // In a full implementation, you'd update the context to handle reordering
+                console.log(`Reordering task ${taskId} from position ${oldIndex} to ${newIndex}`)
+              }
+            }
           }
         }}
       >
@@ -96,10 +143,19 @@ export function Board() {
                 </h2>
                 <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full">{grouped[key].length}</span>
               </header>
-              <SortableContext items={grouped[key].map((t) => `${key}:${t.id}`)} strategy={verticalListSortingStrategy}>
+              <SortableContext 
+                id={key}
+                items={grouped[key].map((t) => `${key}:${t.id}`)} 
+                strategy={verticalListSortingStrategy}
+              >
                 <div className="space-y-3">
                   {grouped[key].map((t) => (
-                    <div key={t.id} id={`${key}:${t.id}`} className="relative group" draggable>
+                    <div 
+                      key={t.id} 
+                      id={`${key}:${t.id}`} 
+                      className="relative group"
+                      data-status={key}
+                    >
                       <TaskCard
                         task={t}
                         onClick={() => {
@@ -118,7 +174,10 @@ export function Board() {
                     </div>
                   ))}
                   {grouped[key].length === 0 && (
-                    <div className="rounded-xl border border-white/20 bg-white/10 p-4 text-sm text-white/80">
+                    <div 
+                      id={`${key}:empty`}
+                      className="rounded-xl border border-white/20 bg-white/10 p-4 text-sm text-white/80"
+                    >
                       No tasks
                     </div>
                   )}
@@ -128,6 +187,21 @@ export function Board() {
           </section>
         ))}
       </DndContext>
+
+      {createPortal(
+        <DragOverlay>
+          {activeId ? (
+            <div className="opacity-50">
+              {(() => {
+                const [, taskId] = activeId.split(':')
+                const task = tasks.find(t => t.id === taskId)
+                return task ? <TaskCard task={task} /> : null
+              })()}
+            </div>
+          ) : null}
+        </DragOverlay>,
+        document.body
+      )}
 
       <Modal
         open={modalOpen}
