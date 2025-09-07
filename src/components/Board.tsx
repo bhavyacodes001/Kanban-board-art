@@ -46,37 +46,39 @@ export function Board() {
   }
 
   return (
-    <div className="space-y-6 lg:space-y-8">
-      <div className="-mt-2 flex flex-wrap items-center gap-2 md:gap-3 justify-center">
-        <span className="inline-flex items-center gap-2 text-xs rounded-full bg-pink-100 text-pink-800 px-3 py-1">
-          <span className="h-2 w-2 rounded-full bg-pink-500"></span>
-          {counts.todo} To Do
-        </span>
-        <span className="inline-flex items-center gap-2 text-xs rounded-full bg-amber-100 text-amber-800 px-3 py-1">
-          <span className="h-2 w-2 rounded-full bg-amber-500"></span>
-          {counts.in_progress} In Progress
-        </span>
-        <span className="inline-flex items-center gap-2 text-xs rounded-full bg-sky-100 text-sky-800 px-3 py-1">
-          <span className="h-2 w-2 rounded-full bg-sky-500"></span>
-          {counts.review} Review
-        </span>
-        <span className="inline-flex items-center gap-2 text-xs rounded-full bg-emerald-100 text-emerald-800 px-3 py-1">
-          <span className="h-2 w-2 rounded-full bg-emerald-500"></span>
-          {counts.completed} Done
-        </span>
-      </div>
-      <div className="flex justify-center">
+    <div className="h-full flex flex-col">
+      <div className="mb-4 flex flex-wrap items-center gap-3 justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="inline-flex items-center gap-2 text-sm rounded-full bg-pink-500/20 text-pink-200 px-4 py-2 ring-1 ring-pink-500/30 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-pink-400 animate-pulse"></span>
+            {counts.todo} To Do
+          </span>
+          <span className="inline-flex items-center gap-2 text-sm rounded-full bg-amber-500/20 text-amber-200 px-4 py-2 ring-1 ring-amber-500/30 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse"></span>
+            {counts.in_progress} In Progress
+          </span>
+          <span className="inline-flex items-center gap-2 text-sm rounded-full bg-sky-500/20 text-sky-200 px-4 py-2 ring-1 ring-sky-500/30 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-sky-400 animate-pulse"></span>
+            {counts.review} Review
+          </span>
+          <span className="inline-flex items-center gap-2 text-sm rounded-full bg-emerald-500/20 text-emerald-200 px-4 py-2 ring-1 ring-emerald-500/30 backdrop-blur-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            {counts.completed} Done
+          </span>
+        </div>
         <button
           onClick={() => {
             setEditingId(null)
             setModalOpen(true)
           }}
-          className="mt-2 inline-flex items-center gap-2 rounded-full bg-white text-indigo-700 px-4 py-2 shadow hover:shadow-md ring-1 ring-black/5 hover:-translate-y-0.5 transition-all"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 shadow-lg hover:shadow-xl ring-1 ring-white/20 hover:-translate-y-0.5 transition-all duration-200 font-medium"
         >
           <span className="text-lg">＋</span>
-          <span className="font-medium">Create Task</span>
+          <span>Create Task</span>
         </button>
       </div>
+      
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6 min-h-0">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -132,23 +134,23 @@ export function Board() {
         {(['todo', 'in_progress', 'review', 'completed'] as TaskStatus[]).map((key) => (
           <section
             key={key}
-            className="flex flex-col rounded-2xl p-4 md:p-5 bg-gradient-to-br text-white shadow-lg relative overflow-hidden ring-1 ring-black/5"
+            className="h-full min-h-0 flex flex-col rounded-2xl p-4 md:p-5 bg-gradient-to-br text-white shadow-2xl relative overflow-hidden ring-1 ring-white/20 backdrop-blur-sm"
           >
             <div className={`absolute inset-0 opacity-90 bg-gradient-to-br ${statusMeta[key].gradient}`}></div>
-            <div className="relative flex flex-col">
-              <header className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold text-lg flex items-center gap-2 drop-shadow-sm">
-                  <span>{statusMeta[key].icon}</span>
+            <div className="relative flex h-full flex-col">
+              <header className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-lg flex items-center gap-2 drop-shadow-lg">
+                  <span className="text-xl">{statusMeta[key].icon}</span>
                   {statusMeta[key].title}
                 </h2>
-                <span className="text-xs bg-black/20 px-2 py-0.5 rounded-full">{grouped[key].length}</span>
+                <span className="text-xs bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full font-medium">{grouped[key].length}</span>
               </header>
               <SortableContext 
                 id={key}
                 items={grouped[key].map((t) => `${key}:${t.id}`)} 
                 strategy={verticalListSortingStrategy}
               >
-                <div className="space-y-3">
+                <div className="flex-1 min-h-0 overflow-auto space-y-3 pr-1">
                   {grouped[key].map((t) => (
                     <div 
                       key={t.id} 
@@ -176,9 +178,10 @@ export function Board() {
                   {grouped[key].length === 0 && (
                     <div 
                       id={`${key}:empty`}
-                      className="rounded-xl border border-white/20 bg-white/10 p-4 text-sm text-white/80"
+                      className="rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm p-6 text-sm text-white/70 text-center"
                     >
-                      No tasks
+                      <div className="text-2xl mb-2">📋</div>
+                      <div>No tasks yet</div>
                     </div>
                   )}
                 </div>
@@ -187,6 +190,7 @@ export function Board() {
           </section>
         ))}
       </DndContext>
+      </div>
 
       {createPortal(
         <DragOverlay>
