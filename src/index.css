@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Subtle 3D tilt on hover for cards */
+.tilt-3d {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.tilt-3d:hover {
+  transform: translateY(-2px);
+}
