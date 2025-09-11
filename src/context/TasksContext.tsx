@@ -22,7 +22,7 @@ interface TasksContextValue {
 
 const TasksContext = createContext<TasksContextValue | undefined>(undefined)
 
-const STORAGE_KEY = 'kanban_tasks_v1'
+const STORAGE_KEY = 'kanban_tasks_v2'
 
 const sampleTasks: TaskItem[] = [
   {
