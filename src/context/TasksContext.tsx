@@ -27,35 +27,67 @@ const STORAGE_KEY = 'kanban_tasks_v1'
 const sampleTasks: TaskItem[] = [
   {
     id: crypto.randomUUID(),
-    title: 'Set up project',
-    description: 'Initialize Vite + Tailwind and base UI',
+    title: 'Complete React Assignment',
+    description: 'Build a todo app with hooks and state management - Due Friday',
     status: 'todo',
     priority: 'high',
-    tags: ['setup']
+    tags: ['university', 'react']
   },
   {
     id: crypto.randomUUID(),
-    title: 'Create board layout',
-    description: 'Design 2x2 grid with vibrant theme',
+    title: 'Study for Data Structures Exam',
+    description: 'Review binary trees, graphs, and sorting algorithms',
     status: 'in_progress',
+    priority: 'high',
+    tags: ['study', 'exam']
+  },
+  {
+    id: crypto.randomUUID(),
+    title: 'Grocery Shopping',
+    description: 'Buy ingredients for meal prep this weekend',
+    status: 'todo',
     priority: 'medium',
-    tags: ['ui']
+    tags: ['personal', 'shopping']
   },
   {
     id: crypto.randomUUID(),
-    title: 'Write review checklist',
-    description: 'Accessibility, responsiveness, consistency',
+    title: 'Review Group Project Code',
+    description: 'Check team members\' contributions and provide feedback',
     status: 'review',
-    priority: 'low',
-    tags: ['qa']
+    priority: 'medium',
+    tags: ['teamwork', 'code-review']
   },
   {
     id: crypto.randomUUID(),
-    title: 'Polish animations',
-    description: 'Subtle hover and entrance motion',
+    title: 'Update Resume',
+    description: 'Add new projects and skills for internship applications',
     status: 'completed',
     priority: 'low',
-    tags: ['polish']
+    tags: ['career', 'resume']
+  },
+  {
+    id: crypto.randomUUID(),
+    title: 'Plan Weekend Trip',
+    description: 'Research places to visit and book accommodation',
+    status: 'todo',
+    priority: 'low',
+    tags: ['travel', 'planning']
+  },
+  {
+    id: crypto.randomUUID(),
+    title: 'Practice LeetCode Problems',
+    description: 'Solve 3 medium difficulty problems for interview prep',
+    status: 'in_progress',
+    priority: 'medium',
+    tags: ['coding', 'interview']
+  },
+  {
+    id: crypto.randomUUID(),
+    title: 'Call Family',
+    description: 'Weekly catch-up call with parents and siblings',
+    status: 'completed',
+    priority: 'low',
+    tags: ['family', 'personal']
   }
 ]
 
