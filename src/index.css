@@ -4,10 +4,37 @@ html, body, #root {
   height: 100%;
 }
 
-/* Subtle 3D tilt on hover for cards */
-.tilt-3d {
-  transition: transform 160ms ease, box-shadow 160ms ease;
+/* Professional drag and drop styles */
+[data-rbd-draggable-id] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.tilt-3d:hover {
-  transform: translateY(-2px);
+
+[data-rbd-drag-handle-dragging-id] {
+  transform: rotate(3deg) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+/* Smooth transitions for all interactive elements */
+button, input, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Custom scrollbar for better UX */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
